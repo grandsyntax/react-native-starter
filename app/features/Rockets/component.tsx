@@ -8,7 +8,7 @@ type DragonRocket = {
 };
 
 function SpaceXDragons(): JSX.Element {
-  const {data = [], error, isLoading} = useGetDragonsQuery(1);
+  const {data = [], error, isLoading} = useGetDragonsQuery({});
 
   return (
     <View style={styles.container}>
