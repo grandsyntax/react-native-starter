@@ -1,127 +1,49 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import {store} from './src/app/store';
+import {store} from './app/store';
 import {Provider} from 'react-redux';
 
-import {useGetDragonsQuery} from './src/app/services/spacex';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import Ships from './app/features/Ships';
+import Rockets from './app/features/Rockets';
 
-function SpaceXDragons({children}: PropsWithChildren): JSX.Element {
-  const {data = [], error, isLoading} = useGetDragonsQuery('');
-
-  console.log(data, error, isLoading);
-
-  return (
-    <View style={styles.sectionContainer}>
-      {error ? (
-        <Text>Oh no, there was an error</Text>
-      ) : isLoading ? (
-        <Text>Loading...</Text>
-      ) : data ? (
-        data.map((dragon, i: number) => {
-          return <Text key={`${dragon.name}-${i}`}>{dragon.name}</Text>;
-        })
-      ) : null}
-    </View>
-  );
-}
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const Tab = createBottomTabNavigator();
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <NavigationContainer>
       <Provider store={store}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={backgroundStyle}>
-          <Header />
-          <View
-            style={{
-              backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            }}>
-            <SpaceXDragons />
-            <Section title="Step One">
-              Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-              screen and then come back to see your edits.
-            </Section>
-            <Section title="See Your Changes">
-              <ReloadInstructions />
-            </Section>
-            <Section title="Debug">
-              <DebugInstructions />
-            </Section>
-            <Section title="Learn More">
-              Read the docs to discover what to do next:
-            </Section>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
+        <Tab.Navigator
+          screenOptions={({route}) => ({
+            tabBarIcon: ({focused, color, size}) => {
+              let iconName: string = 'ios-list';
+
+              if (route.name === 'Ships') {
+                iconName = focused ? 'boat' : 'boat-outline';
+              } else if (route.name === 'Rockets') {
+                iconName = focused ? 'rocket' : 'rocket-outline';
+              }
+
+              // You can return any component that you like here!
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: 'tomato',
+            tabBarInactiveTintColor: 'gray',
+          })}>
+          <Tab.Screen
+            name="Ships"
+            component={Ships.ShipsScreen}
+            // options={{tabBarBadge: 3}}
+          />
+          <Tab.Screen name="Rockets" component={Rockets.RocketsScreen} />
+        </Tab.Navigator>
       </Provider>
-    </SafeAreaView>
+    </NavigationContainer>
   );
 }
 
